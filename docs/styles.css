@@ -531,6 +531,7 @@ img {
 }
 
 .hero-floating--bottom {
+  margin-left: 18px;
   right: 24px;
   bottom: 24px;
 }
@@ -1534,6 +1535,7 @@ button.product-link {
   }
 
   .hero-floating--bottom {
+    margin-left: 18px;
     right: 18px;
     bottom: 18px;
   }
