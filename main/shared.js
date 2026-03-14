@@ -34,9 +34,20 @@
     return `${prefix ? `${prefix} ` : ""}${formatted} сом`;
   }
 
+  function withAssetVersion(url = "") {
+    const config = window.siteConfig || {};
+    const version = String(config.assetVersion || "").trim();
+
+    if (!url || !version || /^https?:\/\//i.test(url)) {
+      return url;
+    }
+
+    return url.includes("?") ? `${url}&v=${encodeURIComponent(version)}` : `${url}?v=${encodeURIComponent(version)}`;
+  }
+
   function buildProductImages(product) {
     if (Array.isArray(product.images) && product.images.length) {
-      return product.images;
+      return product.images.map((image) => withAssetVersion(image));
     }
 
     const imageCount = Math.max(0, Number(product.imageCount) || 0);
@@ -44,7 +55,7 @@
 
     return Array.from({ length: imageCount }, (_, index) => {
       const fileName = String(index + 1).padStart(2, "0");
-      return `./assets/catalog/${product.slug}/${fileName}.${imageExt}`;
+      return withAssetVersion(`./assets/catalog/${product.slug}/${fileName}.${imageExt}`);
     });
   }
 
@@ -153,7 +164,7 @@
     if (!catalogStore.promise) {
       catalogStore.promise = (async () => {
         const config = window.siteConfig || {};
-        const sourceUrl = config.catalogDataUrl || "./assets/catalog/catalog.json";
+        const sourceUrl = withAssetVersion(config.catalogDataUrl || "./assets/catalog/catalog.json");
 
         try {
           const response = await fetch(sourceUrl, { cache: "no-store" });
@@ -236,7 +247,7 @@
 
     if (imageUrl) {
       element.classList.add("has-image");
-      element.style.backgroundImage = `url("${imageUrl}")`;
+      element.style.backgroundImage = `url("${withAssetVersion(imageUrl)}")`;
       return;
     }
 
