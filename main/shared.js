@@ -3,10 +3,6 @@
     promise: null
   };
 
-  const revealObserver = {
-    instance: null
-  };
-
   function escapeHtml(value = "") {
     return String(value).replace(/[&<>"']/g, (character) => {
       const entities = {
@@ -297,31 +293,38 @@
     window.addEventListener("scroll", sync, { passive: true });
   }
 
+  function initTopLinks(root = document) {
+    const links = root.querySelectorAll('a[href="#top"], a[href="./index.html#top"], a[href="./index.html"]');
+
+    links.forEach((link) => {
+      link.addEventListener("click", (event) => {
+        const href = link.getAttribute("href") || "";
+        const isCurrentIndexPage =
+          href === "#top" ||
+          href === "./index.html" ||
+          href === "./index.html#top" ||
+          window.location.pathname.endsWith("/index.html") ||
+          window.location.pathname === "/" ||
+          window.location.pathname.endsWith("/docs/");
+
+        if (href === "#top" || (isCurrentIndexPage && (href === "./index.html" || href === "./index.html#top"))) {
+          event.preventDefault();
+          window.scrollTo(0, 0);
+          if (window.location.hash) {
+            history.replaceState(null, "", window.location.pathname + window.location.search);
+          }
+        }
+      });
+    });
+  }
+
   function observeRevealElements(root = document) {
     const elements = root.querySelectorAll(".reveal, [data-reveal]");
 
     if (!elements.length) {
       return;
     }
-
-    if (!revealObserver.instance) {
-      revealObserver.instance = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add("is-visible");
-              revealObserver.instance.unobserve(entry.target);
-            }
-          });
-        },
-        {
-          threshold: 0.16,
-          rootMargin: "0px 0px -6% 0px"
-        }
-      );
-    }
-
-    elements.forEach((element) => revealObserver.instance.observe(element));
+    elements.forEach((element) => element.classList.add("is-visible"));
   }
 
   window.siteHelpers = {
@@ -331,6 +334,7 @@
     buildWhatsAppUrl,
     initHeaderState,
     initMobileMenu,
+    initTopLinks,
     loadCatalogData,
     observeRevealElements,
     productUrl,
