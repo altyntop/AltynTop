@@ -48,6 +48,8 @@
         `
       )
       .join("");
+
+    helpers.observeRevealElements(root);
   }
 
   function renderFeatured() {
@@ -63,6 +65,8 @@
         return markup.replace('class="product-card reveal"', `class="product-card reveal" style="--delay:${index * 40}ms;"`);
       })
       .join("");
+
+    helpers.observeRevealElements(root);
   }
 
   function renderFilters() {
@@ -203,7 +207,7 @@
 
         const catalogSection = byId("catalog");
         if (catalogSection) {
-          catalogSection.scrollIntoView({ behavior: "smooth", block: "start" });
+          catalogSection.scrollIntoView({ block: "start" });
         }
       }
     });
@@ -241,6 +245,7 @@
     updateWhatsAppLinks();
     helpers.initMobileMenu();
     helpers.initHeaderState();
+    helpers.initTopLinks();
     helpers.observeRevealElements();
 
     try {

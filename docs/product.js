@@ -171,6 +171,7 @@
       renderLoadError();
       helpers.initMobileMenu();
       helpers.initHeaderState();
+      helpers.initTopLinks();
       helpers.observeRevealElements();
       return;
     }
@@ -186,6 +187,7 @@
 
     helpers.initMobileMenu();
     helpers.initHeaderState();
+    helpers.initTopLinks();
     helpers.observeRevealElements();
   }
 
