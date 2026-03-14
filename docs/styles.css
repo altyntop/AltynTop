@@ -944,6 +944,60 @@ img {
   color: var(--accent);
 }
 
+.footer-social {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 16px;
+  margin-bottom: 12px;
+  border-radius: 999px;
+  font-weight: 800;
+  color: #ffffff !important;
+}
+
+.footer-social--whatsapp {
+  background: linear-gradient(135deg, #25d366 0%, #18b357 100%);
+  box-shadow: 0 12px 28px rgba(37, 211, 102, 0.24);
+}
+
+.footer-social--instagram {
+  background: linear-gradient(135deg, #feda75 0%, #fa7e1e 24%, #d62976 58%, #962fbf 82%, #4f5bd5 100%);
+  box-shadow: 0 12px 28px rgba(214, 41, 118, 0.24);
+}
+
+.footer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 28px;
+  padding-top: 22px;
+  border-top: 1px solid var(--border);
+}
+
+.footer-bottom__label {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.footer-site-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #ffffff !important;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.footer-site-link:hover {
+  color: #ffffff !important;
+}
+
 .toast {
   position: fixed;
   left: 50%;
@@ -1376,6 +1430,11 @@ button.product-link {
 
   .footer-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 

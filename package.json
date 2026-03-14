@@ -4,7 +4,7 @@
   "private": true,
   "description": "Сайт ALTYNTOP с реальным каталогом спортивных товаров, страницами товаров и связью через WhatsApp",
   "scripts": {
-    "start": "python3 -m http.server 3000 -d main",
+    "start": "python3 -m http.server 3000 -d docs",
     "sync:pages": "node scripts/sync_pages.mjs"
   },
   "engines": {

@@ -5,7 +5,6 @@ import { fileURLToPath } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..");
-const mainDir = path.join(repoRoot, "main");
 const docsDir = path.join(repoRoot, "docs");
 
 const htmlTargets = ["index.html", "product.html"];
@@ -70,17 +69,16 @@ function updateDataFile(directory, version) {
   fs.writeFileSync(dataPath, updated);
 }
 
-function syncDocs() {
-  fs.rmSync(docsDir, { recursive: true, force: true });
-  fs.cpSync(mainDir, docsDir, { recursive: true });
+function ensureDocsDir() {
+  if (!fs.existsSync(docsDir)) {
+    throw new Error("Папка docs не найдена. Сейчас сайт должен жить в docs.");
+  }
 }
 
 const version = versionStamp();
 
-updateDataFile(mainDir, version);
-updateHtmlFiles(mainDir, version);
-syncDocs();
+ensureDocsDir();
 updateDataFile(docsDir, version);
 updateHtmlFiles(docsDir, version);
 
-console.log(`Pages sync complete. Asset version: ${version}`);
+console.log(`Pages version updated in docs. Asset version: ${version}`);
