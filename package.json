@@ -1,0 +1,12 @@
+{
+  "name": "altyntop-store",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Сайт ALTYNTOP с реальным каталогом спортивных товаров, страницами товаров и связью через WhatsApp",
+  "scripts": {
+    "start": "python3 -m http.server 3000 -d main"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
