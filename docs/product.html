@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ALTYNTOP | Товар</title>
+    <meta
+      name="description"
+      content="Подробная страница товара ALTYNTOP с галереей фото и быстрым переходом в WhatsApp."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="icon" href="./assets/logo-dark.png" type="image/png" />
+    <link rel="apple-touch-icon" href="./assets/logo-dark.png" />
+  </head>
+  <body>
+    <div class="page-glow page-glow--one"></div>
+    <div class="page-glow page-glow--two"></div>
+
+    <header class="site-header">
+      <div class="container header-inner">
+        <a href="./index.html" class="logo-wrap" aria-label="ALTYNTOP">
+          <span class="logo-mark">ALTYNTOP</span>
+          <span class="logo-subtitle">страница товара</span>
+        </a>
+
+        <nav class="desktop-nav" aria-label="Основная навигация">
+          <a href="./index.html#categories">Категории</a>
+          <a href="./index.html#catalog">Каталог</a>
+          <a href="./index.html#advantages">Преимущества</a>
+          <a href="./index.html#contacts">Контакты</a>
+        </nav>
+
+        <div class="header-side">
+          <a class="button button-primary header-cta" id="detailHeaderWhatsApp" href="#" target="_blank" rel="noreferrer">
+            WhatsApp
+          </a>
+
+          <button
+            class="burger-button"
+            type="button"
+            aria-label="Открыть меню"
+            aria-expanded="false"
+            data-menu-toggle
+          >
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="mobile-menu" data-mobile-menu>
+        <nav class="mobile-nav" aria-label="Мобильная навигация">
+          <a href="./index.html#categories">Категории</a>
+          <a href="./index.html#catalog">Каталог</a>
+          <a href="./index.html#advantages">Преимущества</a>
+          <a href="./index.html#contacts">Контакты</a>
+          <a
+            class="button button-primary mobile-menu__cta"
+            id="detailMobileWhatsApp"
+            href="#"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Написать в WhatsApp
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="product-page">
+      <section class="section">
+        <div class="container">
+          <div class="breadcrumb reveal" data-reveal>
+            <a class="back-link" href="./index.html#catalog">Назад в каталог</a>
+            <span>/</span>
+            <span id="breadcrumbCurrent">Товар</span>
+          </div>
+
+          <div class="detail-layout">
+            <div class="detail-gallery panel reveal" data-reveal>
+              <div class="detail-main-media" id="detailMainMedia"></div>
+              <div class="detail-thumbs" id="detailThumbs"></div>
+            </div>
+
+            <aside class="detail-summary panel reveal" data-reveal>
+              <span class="section-kicker" id="detailCategory">Товар</span>
+              <h1 id="detailName">Загрузка...</h1>
+              <p class="detail-price" id="detailPrice"></p>
+              <p class="detail-copy" id="detailDescription"></p>
+              <ul class="detail-points" id="detailPoints"></ul>
+              <div class="detail-actions">
+                <a
+                  class="button button-primary button-full"
+                  id="detailWhatsAppLink"
+                  href="#"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Купить
+                </a>
+                <a class="button button-secondary button-full" href="./index.html#catalog">
+                  Вернуться в каталог
+                </a>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-soft">
+        <div class="container">
+          <div class="section-head reveal" data-reveal>
+            <div>
+              <span class="section-kicker">Похожие товары</span>
+              <h2>Еще из этой категории</h2>
+            </div>
+            <p>Если эта позиция интересна, посмотрите и соседние товары того же раздела.</p>
+          </div>
+          <div class="product-grid" id="relatedGrid"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer" id="contacts">
+      <div class="container footer-grid">
+        <div class="footer-brand">
+          <span class="logo-mark">ALTYNTOP</span>
+          <p>Реальный каталог товаров с галереями фото и заказом напрямую через WhatsApp.</p>
+        </div>
+
+        <div>
+          <h3>Каталог</h3>
+          <a href="./index.html#catalog">Все товары</a>
+          <a href="./index.html#categories">Категории</a>
+          <a href="./index.html#advantages">Преимущества</a>
+        </div>
+
+        <div>
+          <h3>Связь</h3>
+          <a id="detailFooterWhatsApp" href="#" target="_blank" rel="noreferrer">WhatsApp</a>
+          <a id="detailFooterInstagram" href="#" target="_blank" rel="noreferrer">Instagram</a>
+          <a id="detailFooterMaps" href="#" target="_blank" rel="noreferrer">Google Карты</a>
+          <span>Доставка по всему Кыргызстану</span>
+        </div>
+      </div>
+    </footer>
+
+    <script src="./data.js"></script>
+    <script src="./shared.js"></script>
+    <script src="./product.js"></script>
+  </body>
+</html>
