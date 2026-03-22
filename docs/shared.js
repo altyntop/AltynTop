@@ -55,17 +55,65 @@
 
     return Array.from({ length: imageCount }, (_, index) => {
       const fileName = String(index + 1).padStart(2, "0");
-      return withAssetVersion(`./assets/catalog/${product.slug}/${fileName}.${imageExt}`);
+      const assetPath = product.assetPath || product.slug;
+      return withAssetVersion(`./assets/catalog/${assetPath}/${fileName}.${imageExt}`);
     });
+  }
+
+  function flattenCategories(nodes, parentKey = "", depth = 0, bucket = []) {
+    nodes.forEach((node) => {
+      const path = Array.isArray(node.path) && node.path.length ? node.path : [node.label].filter(Boolean);
+      const item = {
+        key: node.key,
+        label: node.label,
+        description: node.description || "",
+        path,
+        pathText: path.join(" / "),
+        parentKey,
+        depth,
+        children: Array.isArray(node.children) ? node.children : []
+      };
+
+      bucket.push(item);
+      flattenCategories(item.children, item.key, depth + 1, bucket);
+    });
+
+    return bucket;
+  }
+
+  function summarizeCategoryNode(node, products, parentKey = "", depth = 0) {
+    const path = Array.isArray(node.path) && node.path.length ? node.path : [node.label].filter(Boolean);
+    const children = (node.children || []).map((child) => summarizeCategoryNode(child, products, node.key, depth + 1));
+    const ownProducts = products.filter((product) => product.groupKey === node.key);
+    const descendantProducts = products.filter((product) => product.categoryPathKeys.includes(node.key));
+    const image = ownProducts[0]?.images?.[0] || children.find((child) => child.image)?.image || descendantProducts[0]?.images?.[0] || "";
+
+    return {
+      key: node.key,
+      label: node.label,
+      description: node.description,
+      path,
+      pathText: path.join(" / "),
+      parentKey,
+      depth,
+      count: descendantProducts.length,
+      directCount: ownProducts.length,
+      image,
+      children
+    };
   }
 
   function normalizeCatalogData(rawData = {}) {
     const rawCategories = Array.isArray(rawData.categories) ? rawData.categories : [];
-    const categoryMap = new Map(rawCategories.map((category) => [category.key, category]));
+    const flatCategories = flattenCategories(rawCategories);
+    const categoryMap = new Map(flatCategories.map((category) => [category.key, category]));
     const rawProducts = Array.isArray(rawData.products) ? rawData.products : [];
 
     const products = rawProducts.map((product) => {
-      const category = categoryMap.get(product.categoryKey) || {};
+      const categoryPath = Array.isArray(product.categoryPath) ? product.categoryPath : [];
+      const categoryPathKeys = Array.isArray(product.categoryPathKeys) ? product.categoryPathKeys : [];
+      const topCategory = categoryMap.get(product.categoryKey) || categoryMap.get(categoryPathKeys[0]) || {};
+      const group = categoryMap.get(product.groupKey) || categoryMap.get(categoryPathKeys.at(-1)) || topCategory;
       const images = buildProductImages(product);
       const rawPrice =
         typeof product.price === "number"
@@ -84,26 +132,24 @@
         priceValue: Number.isFinite(rawPrice) ? rawPrice : null,
         imageCount: images.length,
         images,
-        category: product.category || category.label || "",
-        categoryDescription: product.categoryDescription || category.description || ""
+        categoryKey: product.categoryKey || topCategory.key || "",
+        category: product.category || topCategory.label || "",
+        categoryDescription: product.categoryDescription || topCategory.description || "",
+        groupKey: product.groupKey || group.key || product.categoryKey || "",
+        group: product.group || group.label || product.category || topCategory.label || "",
+        groupDescription: product.groupDescription || group.description || "",
+        categoryPath,
+        categoryPathKeys,
+        categoryPathText: categoryPath.join(" / ")
       };
     });
 
-    const categories = rawCategories.map((category) => {
-      const group = products.filter((product) => product.categoryKey === category.key);
-
-      return {
-        key: category.key,
-        label: category.label,
-        description: category.description,
-        count: group.length,
-        image: group[0]?.images?.[0] || ""
-      };
-    });
+    const categories = rawCategories.map((category) => summarizeCategoryNode(category, products));
 
     return {
       generatedAt: rawData.generatedAt || "",
       categories,
+      flatCategories,
       featuredSlugs: Array.isArray(rawData.featuredSlugs) ? rawData.featuredSlugs : [],
       products
     };
@@ -174,9 +220,8 @@
           }
 
           const rawData = await response.json();
-          const data = normalizeCatalogData(rawData);
-          window.catalogData = data;
-          return data;
+          window.catalogData = rawData;
+          return normalizeCatalogData(rawData);
         } catch (error) {
           if (window.catalogData) {
             return normalizeCatalogData(window.catalogData);
@@ -194,7 +239,7 @@
     const image = product.images?.[0] || "";
     const safeImage = escapeAttribute(image);
     const safeTitle = escapeHtml(product.name);
-    const safeCategory = escapeHtml(categoryLabel || product.category || "");
+    const safeCategory = escapeHtml(categoryLabel || product.categoryPathText || product.group || product.category || "");
 
     return `
       <a

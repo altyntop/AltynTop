@@ -1,28 +1,36 @@
-## Что внутри
+## ALTYNTOP catalog
 
-- главная страница с реальными товарами: [main/index.html](/home/dastan/Desktop/streetwear-store/main/index.html)
-- отдельная страница товара с галереей: [main/product.html](/home/dastan/Desktop/streetwear-store/main/product.html)
-- конфиг магазина и WhatsApp: [main/data.js](/home/dastan/Desktop/streetwear-store/main/data.js)
-- JSON-каталог товаров: [main/assets/catalog/catalog.json](/home/dastan/Desktop/streetwear-store/main/assets/catalog/catalog.json)
-- логика главной страницы: [main/script.js](/home/dastan/Desktop/streetwear-store/main/script.js)
-- логика страницы товара: [main/product.js](/home/dastan/Desktop/streetwear-store/main/product.js)
-- общие хелперы: [main/shared.js](/home/dastan/Desktop/streetwear-store/main/shared.js)
-- стили: [main/styles.css](/home/dastan/Desktop/streetwear-store/main/styles.css)
+- сайт запускается из `docs/`
+- локальный запуск: `npm start`
+- пересобрать каталог: `npm run catalog:generate`
+- обновить версии ассетов в HTML: `npm run sync:pages`
 
-## Формат товара
+## Как теперь устроен каталог
 
-Фото товара лежат в папке:
+- источник фото: `/home/dastan/Desktop/tg-media-folder-bot/exports`
+- структура папок = структура каталога
+- папка верхнего уровня = категория
+- папка внутри категории = подгруппа
+- папка внутри подгруппы = товар с фото
 
-- [main/assets/catalog](/home/dastan/Desktop/streetwear-store/main/assets/catalog)
+Пример:
 
-Пример записи в `catalog.json`:
+```text
+exports/
+  Обувь/
+    Бутсы/
+      Бутсы Адидас Предатор 2800 цена/
+        01.jpg
+```
 
-{
-  "slug": "adidas-predator-boots",
-  "name": "Бутсы Adidas Predator",
-  "price": 2800,
-  "categoryKey": "footwear",
-  "short": "Контроль мяча и плотная посадка",
-  "description": "Классическая модель бутс для футбола.",
-  "imageCount": 3
-}
+## Что попадает в `catalog.json`
+
+- дерево `categories` собирается из названий папок
+- у товара сохраняются `category`, `group`, `categoryPath`, `categoryPathKeys`
+- картинки копируются в `docs/assets/catalog/<category>/<group>/<slug>/`
+
+## Важно
+
+- группы больше не нужно вручную прописывать в JSON
+- если добавить новую подгруппу папкой, сайт увидит ее после `npm run catalog:generate`
+- текстовые метаданные товара пока остаются в `scripts/generate_catalog.mjs`

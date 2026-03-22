@@ -7,6 +7,23 @@
     return document.getElementById(id);
   }
 
+  function syncImageOrientation(container, image) {
+    if (!container || !image) {
+      return;
+    }
+
+    const updateOrientation = () => {
+      container.classList.toggle("is-portrait", image.naturalHeight > image.naturalWidth);
+    };
+
+    if (image.complete) {
+      updateOrientation();
+      return;
+    }
+
+    image.addEventListener("load", updateOrientation, { once: true });
+  }
+
   function getProduct() {
     const params = new URLSearchParams(window.location.search);
     const slug = params.get("slug");
@@ -21,16 +38,25 @@
       return;
     }
 
-    const setMainImage = (imageUrl) => {
+    const setMainImage = (imageUrl, imageIndex = 0) => {
       main.innerHTML = `
-        <div
-          class="detail-main-media__image ${imageUrl ? "has-image" : ""}"
-          style="${imageUrl ? `background-image: url('${helpers.escapeAttribute(imageUrl)}');` : ""}"
-        ></div>
+        <div class="detail-main-media__image ${imageUrl ? "has-image" : ""}">
+          ${imageUrl
+            ? `
+              <img
+                class="detail-main-media__img"
+                src="${helpers.escapeAttribute(imageUrl)}"
+                alt="${helpers.escapeAttribute(`${product.name} — фото ${imageIndex + 1}`)}"
+              />
+            `
+            : ""}
+        </div>
       `;
+
+      syncImageOrientation(main.querySelector(".detail-main-media__image"), main.querySelector(".detail-main-media__img"));
     };
 
-    setMainImage(product.images[0] || "");
+    setMainImage(product.images[0] || "", 0);
 
     root.innerHTML = product.images
       .map(
@@ -39,11 +65,23 @@
             class="detail-thumb ${index === 0 ? "is-active" : ""}"
             type="button"
             data-image="${helpers.escapeAttribute(image)}"
-            style="background-image: url('${helpers.escapeAttribute(image)}');"
-          ></button>
+            data-index="${index}"
+          >
+            <img
+              class="detail-thumb__image"
+              src="${helpers.escapeAttribute(image)}"
+              alt="${helpers.escapeAttribute(`${product.name} — миниатюра ${index + 1}`)}"
+              loading="lazy"
+              decoding="async"
+            />
+          </button>
         `
       )
       .join("");
+
+    root.querySelectorAll(".detail-thumb").forEach((button) => {
+      syncImageOrientation(button, button.querySelector(".detail-thumb__image"));
+    });
 
     root.addEventListener("click", (event) => {
       const thumb = event.target.closest("[data-image]");
@@ -56,7 +94,7 @@
         button.classList.toggle("is-active", button === thumb);
       });
 
-      setMainImage(thumb.getAttribute("data-image") || "");
+      setMainImage(thumb.getAttribute("data-image") || "", Number(thumb.getAttribute("data-index") || 0));
     });
   }
 
@@ -68,7 +106,7 @@
     }
 
     const related = data.products
-      .filter((item) => item.categoryKey === product.categoryKey && item.slug !== product.slug)
+      .filter((item) => item.groupKey === product.groupKey && item.slug !== product.slug)
       .slice(0, 4);
 
     root.innerHTML = related
@@ -85,7 +123,7 @@
     document.title = `${product.name} | ALTYNTOP`;
 
     byId("breadcrumbCurrent").textContent = product.name;
-    byId("detailCategory").textContent = product.category;
+    byId("detailCategory").textContent = product.categoryPathText || product.group || product.category;
     byId("detailName").textContent = product.name;
     byId("detailPrice").textContent = product.price;
     byId("detailDescription").textContent = product.description;
@@ -93,7 +131,7 @@
     const points = byId("detailPoints");
     points.innerHTML = `
       <li>${helpers.escapeHtml(product.short)}</li>
-      <li>Категория: ${helpers.escapeHtml(product.category)}</li>
+      <li>Раздел: ${helpers.escapeHtml(product.categoryPathText || product.category)}</li>
       <li>Для заказа и наличия используйте WhatsApp</li>
     `;
 
