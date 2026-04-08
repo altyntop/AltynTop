@@ -34,6 +34,25 @@
     return `${prefix ? `${prefix} ` : ""}${formatted} сом`;
   }
 
+  function getSiteUrl() {
+    const config = window.siteConfig || {};
+    return String(config.siteUrl || "").trim().replace(/\/+$/, "");
+  }
+
+  function absoluteUrl(url = "") {
+    if (!url) {
+      return "";
+    }
+
+    try {
+      const siteUrl = getSiteUrl();
+      const baseUrl = siteUrl ? `${siteUrl}/` : window.location.href;
+      return new URL(url, baseUrl).toString();
+    } catch (error) {
+      return "";
+    }
+  }
+
   function withAssetVersion(url = "") {
     const config = window.siteConfig || {};
     const version = String(config.assetVersion || "").trim();
@@ -157,6 +176,10 @@
 
   function productUrl(slug) {
     return `./product.html?slug=${encodeURIComponent(slug)}`;
+  }
+
+  function productAbsoluteUrl(slug) {
+    return absoluteUrl(`/product.html?slug=${encodeURIComponent(slug)}`);
   }
 
   function buildWhatsAppUrl(product, customText) {
@@ -384,15 +407,18 @@
   }
 
   window.siteHelpers = {
+    absoluteUrl,
     buildGoogleMapsUrl,
     escapeHtml,
     escapeAttribute,
     buildWhatsAppUrl,
+    getSiteUrl,
     initHeaderState,
     initMobileMenu,
     initTopLinks,
     loadCatalogData,
     observeRevealElements,
+    productAbsoluteUrl,
     productUrl,
     renderProductCard,
     setBackgroundImage

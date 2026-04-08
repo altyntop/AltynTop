@@ -1,6 +1,7 @@
 window.siteConfig = {
   brandName: "ALTYNTOP",
   brandTagline: "Магазин спортивных товаров",
+  siteUrl: "https://altyntop.shop",
   assetVersion: "20260322-182845",
   catalogDataUrl: "./assets/catalog/catalog.json",
   whatsappNumber: "996705619619",

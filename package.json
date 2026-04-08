@@ -6,7 +6,8 @@
   "scripts": {
     "start": "python3 -m http.server 3000 -d docs",
     "sync:pages": "node scripts/sync_pages.mjs",
-    "catalog:generate": "node scripts/generate_catalog.mjs"
+    "catalog:generate": "node scripts/generate_catalog.mjs",
+    "seo:generate": "node scripts/generate_seo.mjs"
   },
   "engines": {
     "node": ">=18"

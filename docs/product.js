@@ -7,6 +7,85 @@
     return document.getElementById(id);
   }
 
+  function setElementContent(id, content) {
+    const element = byId(id);
+
+    if (element) {
+      element.setAttribute("content", content);
+    }
+  }
+
+  function setCanonical(url) {
+    const canonical = byId("canonicalLink");
+
+    if (canonical) {
+      canonical.href = url;
+    }
+  }
+
+  function setProductStructuredData(product, pageUrl, imageUrl, description) {
+    const node = byId("productJsonLd");
+
+    if (!node) {
+      return;
+    }
+
+    const payload = {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      name: product.name,
+      description,
+      url: pageUrl,
+      image: product.images.map((image) => helpers.absoluteUrl(image)).filter(Boolean),
+      category: product.categoryPathText || product.group || product.category,
+      brand: {
+        "@type": "Brand",
+        name: config.brandName || "ALTYNTOP"
+      },
+      seller: {
+        "@type": "Organization",
+        name: config.brandName || "ALTYNTOP",
+        url: helpers.getSiteUrl() || window.location.origin
+      }
+    };
+
+    if (imageUrl && !payload.image.length) {
+      payload.image = [imageUrl];
+    }
+
+    if (Number.isFinite(product.priceValue)) {
+      payload.offers = {
+        "@type": "Offer",
+        price: String(product.priceValue),
+        priceCurrency: "KGS",
+        url: pageUrl
+      };
+    }
+
+    node.textContent = JSON.stringify(payload, null, 2);
+  }
+
+  function applyDefaultSeo(options = {}) {
+    const title = options.title || "ALTYNTOP | Товар";
+    const description =
+      options.description || "Подробная страница товара ALTYNTOP с галереей фото и быстрым переходом в WhatsApp.";
+    const pageUrl = options.pageUrl || helpers.absoluteUrl(window.location.pathname + window.location.search);
+    const imageUrl = options.imageUrl || helpers.absoluteUrl(config.heroImage || "./assets/zastavka.png");
+    const robots = options.robots || "noindex,follow";
+
+    document.title = title;
+    setElementContent("metaRobots", robots);
+    setElementContent("metaDescription", description);
+    setElementContent("metaOgTitle", title);
+    setElementContent("metaOgDescription", description);
+    setElementContent("metaOgUrl", pageUrl);
+    setElementContent("metaOgImage", imageUrl);
+    setElementContent("metaTwitterTitle", title);
+    setElementContent("metaTwitterDescription", description);
+    setElementContent("metaTwitterImage", imageUrl);
+    setCanonical(pageUrl);
+  }
+
   function syncImageOrientation(container, image) {
     if (!container || !image) {
       return;
@@ -120,7 +199,24 @@
   }
 
   function fillProduct(product) {
-    document.title = `${product.name} | ALTYNTOP`;
+    const pageUrl = helpers.productAbsoluteUrl(product.slug);
+    const imageUrl = helpers.absoluteUrl(product.images[0] || config.heroImage || "./assets/zastavka.png");
+    const description = [
+      product.price ? `${product.name} — ${product.price}.` : `${product.name}.`,
+      product.short || product.description || "",
+      "Заказ через WhatsApp в магазине ALTYNTOP."
+    ]
+      .filter(Boolean)
+      .join(" ");
+
+    applyDefaultSeo({
+      title: `${product.name} | ALTYNTOP`,
+      description,
+      pageUrl,
+      imageUrl,
+      robots: "index,follow"
+    });
+    setProductStructuredData(product, pageUrl, imageUrl, description);
 
     byId("breadcrumbCurrent").textContent = product.name;
     byId("detailCategory").textContent = product.categoryPathText || product.group || product.category;
@@ -176,6 +272,11 @@
   }
 
   function renderNotFound() {
+    applyDefaultSeo({
+      title: "ALTYNTOP | Товар не найден",
+      description: "Ссылка на товар устарела или товар был удален из каталога ALTYNTOP.",
+      robots: "noindex,follow"
+    });
     byId("detailName").textContent = "Товар не найден";
     byId("detailDescription").textContent =
       "Похоже, ссылка на товар устарела. Вернитесь в каталог и откройте нужную позицию заново.";
@@ -187,7 +288,11 @@
   }
 
   function renderLoadError() {
-    document.title = "ALTYNTOP | Каталог недоступен";
+    applyDefaultSeo({
+      title: "ALTYNTOP | Каталог недоступен",
+      description: "Временная ошибка загрузки каталога товаров ALTYNTOP.",
+      robots: "noindex,nofollow"
+    });
     byId("breadcrumbCurrent").textContent = "Ошибка загрузки";
     byId("detailCategory").textContent = "Каталог";
     byId("detailName").textContent = "Не удалось загрузить каталог";
